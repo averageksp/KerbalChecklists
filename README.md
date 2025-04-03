@@ -39,7 +39,29 @@
 ---
 
 ## How to Compile
-_(You can edit this section yourself with compilation steps)_
+How to compile it yourself.
+
+1. Open Visual Studio 2022
+2. Copy the source code from this repository
+3. Select the references below
+   ```
+   KSPAssets.dll
+   UnityEngine.InputModule.dll
+   UnityEngine.InputLegacyModule.dll
+   UnityEngine.PhysicsModule.dll
+   KSPAssets.XmlSerializers.dll
+   UnityEngine.AnimationModulue.dll
+   UnityEngine.CoreModule.dll
+   UnityEngine.IMGUIModule.dll
+   UnityEngine.UI.dll
+   Assembly-CSharp.dll
+   Assembly-CSharp-firstpass.dll
+   ```
+4. After that compile it yourself and make a folder called KerbalChecklists in your GameData folder
+5. And you're done! There will be no icon for it so you have to copy it from the actual release and create your own folder called Textures in the KerbalChecklists so it should look like this
+   ```
+   KerbalChecklists/Textures/icon.png
+   ```
 
 ---
 
