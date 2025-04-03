@@ -1,7 +1,5 @@
 # Kerbal Checklists
 
-![Kerbal Checklists](https://example.com/icon.png)
-
 **Kerbal Checklists** is a simple and efficient in-game checklist system for **Kerbal Space Program (KSP)** to help you stay on top of your rocket, plane, and flight preparations.
 
 ---
