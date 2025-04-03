@@ -15,7 +15,7 @@
 ---
 
 ## Installation
-1. Download the latest version from the [Releases](https://github.com/your-repo/KerbalChecklists/releases).
+1. Download the latest version from the [Releases](https://github.com/averageksp/KerbalChecklists/releases).
 2. Extract the contents into your **KSP GameData** folder.
 3. Ensure the folder structure looks like this:
    ```
@@ -44,7 +44,7 @@ _(You can edit this section yourself with compilation steps)_
 ---
 
 ## Issues and Contributions
-If you find any issues or have suggestions, feel free to open a ticket in the [Issues](https://github.com/your-repo/KerbalChecklists/issues) section. Contributions are welcome via pull requests!
+If you find any issues or have suggestions, feel free to open a ticket in the [Issues](https://github.com/averageksp/KerbalChecklists/issues) section. Contributions are welcome via pull requests!
 
 ---
 
