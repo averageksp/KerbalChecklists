@@ -41,7 +41,7 @@
 ## How to Compile
 How to compile it yourself.
 
-1. Open Visual Studio 2022
+1. Open Visual Studio
 2. Copy the source code from this repository
 3. Select the references below
    ```
