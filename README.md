@@ -107,5 +107,5 @@ Pull requests are welcome!
 
 ## 📄 License
 
-This project is licensed under the **MIT License**. See the [LICENSE](https://github.com/averageksp/KerbalChecklists/issues) file for more information.
+This project is licensed under the **MIT License**. See the [LICENSE]([https://github.com/averageksp/KerbalChecklists/blob/main/LICENSE) file for more information.
 
