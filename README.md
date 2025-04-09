@@ -1,75 +1,111 @@
 # Kerbal Checklists
 
-**Kerbal Checklists** is a simple and efficient in-game checklist system for **Kerbal Space Program (KSP)** to help you stay on top of your rocket, plane, and flight preparations.
+**Kerbal Checklists** is an in-game checklist system for **Kerbal Space Program (KSP)** to help you manage launch procedures, space missions, and vehicle preparation.
 
 ---
 
-## Features
-- **Create, save, and load checklists** for **VAB, SPH, and Flight mode**
-- **Automatically saves checklists** while editing
-- **Toolbar integration** with a custom icon
-- **Refresh button** to reload checklists without restarting the game
-- **Easy deletion** of old checklists with optional confirmation
-- **Character limit warning** (optional)
+## ✨ Features
+
+- Create, save, and load checklists for **VAB**, **SPH**, and **Flight** modes
+- Auto-saves while editing checklists
+- Toolbar icon integration for quick access
+- Refresh checklists without restarting the game
+- Safe checklist deletion with confirmation prompts
+- Optional character limit warnings
 
 ---
 
-## Installation
+## 📦 Installation
+
 1. Download the latest version from the [Releases](https://github.com/averageksp/KerbalChecklists/releases).
-2. Extract the contents into your **KSP GameData** folder.
-3. Ensure the folder structure looks like this:
+2. Extract the zip into your **KSP/GameData/** folder.
+3. Your folder structure should look like this:
    ```
    GameData/
      KerbalChecklists/
-       KerbalChecklists.dll
-       Textures/icon.png
        SavedChecklists/
+         Checklist.txt
+       Plugin/
+         KerbalChecklists.dll
+       Textures/
+         icon.png
    ```
-4. Launch **KSP** and start using **Kerbal Checklists**!
+4. Launch KSP and click the toolbar icon to open (must be in VAB, SPH or Flight for it to show up) **Kerbal Checklists**.
 
 ---
 
-## How to Use
-- Open the **Kerbal Checklists** UI by clicking on the toolbar icon.
-- **Add, remove, and mark checklist items** as completed.
-- **Save and load checklists** at any time.
-- Use the **refresh button** to reload checklists without restarting the game.
-- When pressing **"New Checklist"**, you’ll be prompted to save your current checklist first.
+## 🚀 How to Use
+
+- Click the **toolbar icon** to open the checklist UI.
+- **Add, check off, and delete items** from your list.
+- Use the **Save** button to save your current checklist, and **Load** to retrieve existing ones.
+- The **New Checklist** button prompts a save (for default lists) before clearing your items.
+- Click **Refresh** to reload checklists during runtime.
 
 ---
 
-## How to Compile
-How to compile it yourself.
+### 🛠️ Making a Checklist Mod
 
-1. Open Visual Studio
-2. Copy the source code from this repository
-3. Select the references below
+1. Inside `GameData`, create a folder named after your mod.
+2. Create a folder in the folder you just created, it has to be called `Checklists`.
+3. Add a `.txt` file for example with one checklist item per line, like:
+   ```
+   False|SAS
+   False|RCS
+   False|Solar Panels
+   ```
+   False would be that it is **not** checked and true would be that it **will** be checked.
+4. To make the mod show up please make a `.txt` file inside your folder and call it `KerbalChecklistsConfig.txt`.
+   You should put this into the `.txt` file and save it.
+   ```
+   ModName=ExampleMod
+   Author=averageksp
+   AddToKerbalChecklists=true
+   ```
+5. **REQUIRED**: If you want to publish your mod (e.g. to CKAN, Spacedock, etc.) a licence **MUST** be included.
+---
+
+## 🛠️ How to Compile
+
+Want to build from source?
+
+1. Open **Visual Studio**.
+2. Clone or download this repo.
+3. Add the following references:
    ```
    KSPAssets.dll
    UnityEngine.InputModule.dll
    UnityEngine.InputLegacyModule.dll
    UnityEngine.PhysicsModule.dll
    KSPAssets.XmlSerializers.dll
-   UnityEngine.AnimationModulue.dll
+   UnityEngine.AnimationModule.dll
    UnityEngine.CoreModule.dll
    UnityEngine.IMGUIModule.dll
    UnityEngine.UI.dll
    Assembly-CSharp.dll
    Assembly-CSharp-firstpass.dll
    ```
-4. After that compile it yourself and make a folder called KerbalChecklists in your GameData folder
-5. And you're done! There will be no icon for it so you have to copy it from the actual release and create your own folder called Textures in the KerbalChecklists so it should look like this
+4. Build the project.
+5. Copy the compiled `KerbalChecklists.dll` to:
    ```
-   KerbalChecklists/Textures/icon.png
+   GameData/KerbalChecklists/
+   ```
+6. Add the toolbar icon image:
+   ```
+   GameData/KerbalChecklists/Textures/icon.png
    ```
 
 ---
 
-## Issues and Contributions
-If you find any issues or have suggestions, feel free to open a ticket in the [Issues](https://github.com/averageksp/KerbalChecklists/issues) section. Contributions are welcome via pull requests!
+## 🐞 Issues & Contributions
+
+Found a bug or want to suggest a feature? Head over to the [Issues](https://github.com/averageksp/KerbalChecklists/issues) tab.
+
+Pull requests are welcome!
 
 ---
 
-## License
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+## 📄 License
+
+This project is licensed under the **MIT License**. See the [LICENSE](https://github.com/averageksp/KerbalChecklists/issues) file for more information.
 
