@@ -1,0 +1,3 @@
+ModName=Checklist Mod Example
+Author=averageksp
+AddToKerbalChecklists=true
