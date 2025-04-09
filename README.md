@@ -1,5 +1,5 @@
 # Kerbal Checklists
-<img alt="YAP" src="https://imgur.com/l7WQ51u">
+![Imgur Image](https://imgur.com/l7WQ51u.png)
 **Kerbal Checklists** is an in-game checklist system for **Kerbal Space Program (KSP)** to help you manage launch procedures, space missions, and vehicle preparation.
 
 ---
