@@ -11,7 +11,6 @@
 - Toolbar icon integration for quick access
 - Refresh checklists without restarting the game
 - Safe checklist deletion with confirmation prompts
-- Optional character limit warnings
 
 ---
 
