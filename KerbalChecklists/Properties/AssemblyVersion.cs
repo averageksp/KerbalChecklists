@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("Copyright ©  2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+[assembly: KSPAssemblyDependency("ClickThroughBlocker", 1, 0)]
 [assembly: ComVisible(false)]
 [assembly: Guid("c8efc0fa-de75-4aa1-b3c1-d1553a0340e9")]
 [assembly: AssemblyVersion("1.0.0.0")]
