@@ -4,6 +4,13 @@
 
 ---
 
+## ⚠️ Dependencies
+- Requires ClickThroughBlocker.
+  If you are using CKAN it will be done automatically, if not then download it from either of these websites:
+- SpaceDock: https://spacedock.info/mod/1689/Click%20Through%20Blocker
+- GitHub: https://github.com/linuxgurugamer/ClickThroughBlocker
+- Forum Post (do not download it here): https://forum.kerbalspaceprogram.com/topic/170747-112x-click-through-blocker-new-dependency/
+
 ## ✨ Features
 
 - Create, save, and load checklists for **VAB**, **SPH**, and **Flight** modes
