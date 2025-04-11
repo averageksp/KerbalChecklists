@@ -1,0 +1,17 @@
+False|Ensure correct center of mass and lift alignment  
+False|Check symmetry for wings and control surfaces  
+False|Verify aerodynamic stability in flight  
+False|Ensure landing gear is properly placed and aligned  
+False|Test takeoff and landing capabilities  
+False|Check engine type (jet, rocket, hybrid)  
+False|Ensure enough air intakes for jet engines  
+False|Add sufficient battery power for onboard systems  
+False|Install solar panels for long-duration flights  
+False|Ensure RCS thrusters are installed for space operations  
+False|Verify SAS stability for controlled flight  
+False|Check fuel balance to prevent instability  
+False|Test flaps and airbrakes for maneuvering  
+False|Confirm proper cargo bay usage (if applicable)  
+False|Ensure docking ports are available if needed  
+False|Test glide ratio for emergency landings  
+False|Ensure emergency parachutes are installed if needed  

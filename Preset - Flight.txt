@@ -1,0 +1,18 @@
+False|Activate SAS for stability  
+False|Check fuel levels before burns  
+False|Extend solar panels to prevent power loss  
+False|Deploy communication antennas for long-range control  
+False|Monitor battery levels  
+False|Perform RCS thruster test  
+False|Check crew status and life support (if using mods)  
+False|Plan maneuver nodes for efficient burns  
+False|Check for overheating components  
+False|Align spacecraft for docking maneuvers  
+False|Activate science equipment for data collection  
+False|Monitor periapsis and apoapsis for orbital adjustments  
+False|Prepare for re-entry by lowering periapsis  
+False|Jettison empty fuel tanks if needed  
+False|Enable heat shield protection before atmospheric entry  
+False|Deploy parachutes at safe altitude  
+False|Ensure safe landing zone clearance  
+False|Verify mission objectives completion  

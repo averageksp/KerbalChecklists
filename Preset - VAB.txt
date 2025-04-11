@@ -1,0 +1,18 @@
+False|Check payload weight and size  
+False|Ensure correct engine selection for each stage  
+False|Verify staging order  
+False|Check that all decouplers are correctly placed  
+False|Ensure parachutes are attached for safe return  
+False|Confirm SAS module is installed  
+False|Add enough RCS thrusters for maneuverability  
+False|Ensure sufficient battery power for long missions  
+False|Install solar panels or RTGs for energy generation  
+False|Verify fuel crossfeed settings  
+False|Ensure docking ports are in the correct orientation  
+False|Test fairing deployment in simulation  
+False|Check communication antennas for long-range control  
+False|Confirm heat shields are present for re-entry  
+False|Place science equipment for data collection  
+False|Ensure crew hatch is accessible  
+False|Test launch escape system (LES) for crew safety  
+False|Run a simulated launch for potential failures  
