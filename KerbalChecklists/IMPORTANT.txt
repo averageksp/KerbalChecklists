@@ -1,0 +1,4 @@
+If you are looking for the textures or the SavedChecklists, they are not here but instead here
+
+Textures: https://github.com/averageksp/KerbalChecklists/tree/main/Textures
+SavedChecklists: https://github.com/averageksp/KerbalChecklists/tree/main/SavedChecklists
