@@ -4,6 +4,7 @@ using System.IO;
 using UnityEngine;
 using KSP;
 using KSP.UI.Screens;
+using ClickThroughFix;
 
 public class ModConfig
 {
@@ -106,9 +107,9 @@ public class KerbalChecklists : MonoBehaviour
         string[] possibleIconPaths = {
             Path.Combine(Path.GetFileName(defaultFolder), "Textures/icon"),
             Path.Combine(Path.GetFileName(defaultFolder) + "/Textures/icon"),
-            "KerbalChecklists-1.1/KerbalChecklists/Textures/icon",
+            "KerbalChecklists-1.2/KerbalChecklists/Textures/icon",
             "KerbalChecklists/Textures/icon",
-            "KerbalChecklists-1.1/Textures/icon"
+            "KerbalChecklists-1.2/Textures/icon"
         };
         Texture2D icon = null;
         foreach (string path in possibleIconPaths)
@@ -172,7 +173,7 @@ public class KerbalChecklists : MonoBehaviour
     {
         GUI.skin = HighLogic.Skin;
         if (showGUI)
-            windowRect = GUILayout.Window("KerbalChecklistsWindow".GetHashCode(), windowRect, DrawWindow, "Kerbal Checklists", GUILayout.Width(350), GUILayout.Height(650));
+            windowRect = ClickThruBlocker.GUILayoutWindow("KerbalChecklistsWindow".GetHashCode(), windowRect, DrawWindow, "Kerbal Checklists", GUILayout.Width(350), GUILayout.Height(650));
         if (showConfirmNewChecklistDialog)
             DrawConfirmNewChecklistDialog();
         if (showSaveBeforeNewChecklistDialog)
@@ -349,7 +350,7 @@ public class KerbalChecklists : MonoBehaviour
     private void DrawItemDeleteConfirmationDialog()
     {
         Rect dialogRect = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 80, 300, 140);
-        GUILayout.Window("ItemDeleteDialog".GetHashCode(), dialogRect, id => {
+        ClickThruBlocker.GUILayoutWindow("ItemDeleteDialog".GetHashCode(), dialogRect, id => {
             ModConfig config = modConfigs.ContainsKey(currentModFolder) ? modConfigs[currentModFolder] : null;
             string modName = config != null ? config.ModName : Path.GetFileName(currentChecklistFolder);
             string author = config != null ? config.Author : "";
@@ -369,7 +370,7 @@ public class KerbalChecklists : MonoBehaviour
     private void DrawFileDeleteConfirmationDialog()
     {
         Rect dialogRect = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 80, 300, 160);
-        GUILayout.Window("FileDeleteDialog".GetHashCode(), dialogRect, id => {
+        ClickThruBlocker.GUILayoutWindow("FileDeleteDialog".GetHashCode(), dialogRect, id => {
             GUILayout.Label("Delete checklist file:");
             GUILayout.Label(checklistToDelete);
             if (currentChecklistFolder == defaultSavedFolder)
@@ -401,7 +402,7 @@ public class KerbalChecklists : MonoBehaviour
     private void DrawConfirmNewChecklistDialog()
     {
         Rect dialogRect = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 75, 300, 120);
-        GUILayout.Window("ConfirmNewChecklistDialog".GetHashCode(), dialogRect, id => {
+        ClickThruBlocker.GUILayoutWindow("ConfirmNewChecklistDialog".GetHashCode(), dialogRect, id => {
             GUILayout.Label("Do you want to create a new checklist?");
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
@@ -422,7 +423,7 @@ public class KerbalChecklists : MonoBehaviour
     private void DrawSaveBeforeNewChecklistDialog()
     {
         Rect dialogRect = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 75, 300, 120);
-        GUILayout.Window("SaveBeforeNewChecklistDialog".GetHashCode(), dialogRect, id => {
+        ClickThruBlocker.GUILayoutWindow("SaveBeforeNewChecklistDialog".GetHashCode(), dialogRect, id => {
             GUILayout.Label("Save before creating a new checklist?");
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
@@ -446,7 +447,7 @@ public class KerbalChecklists : MonoBehaviour
     {
         if (currentChecklistFolder != defaultSavedFolder) { showSaveChecklistDialog = false; return; }
         Rect dialogRect = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 70, 300, 140);
-        GUILayout.Window("SaveChecklistDialog".GetHashCode(), dialogRect, id => {
+        ClickThruBlocker.GUILayoutWindow("SaveChecklistDialog".GetHashCode(), dialogRect, id => {
             GUILayout.Label("Enter name for checklist:");
             string nameInput = GUILayout.TextField(currentChecklistName, GUILayout.Width(250));
             currentChecklistName = nameInput;
@@ -474,7 +475,7 @@ public class KerbalChecklists : MonoBehaviour
     private void DrawModSaveChecklistDialog()
     {
         Rect dialogRect = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 60, 300, 120);
-        GUILayout.Window("ModSaveChecklistDialog".GetHashCode(), dialogRect, id => {
+        ClickThruBlocker.GUILayoutWindow("ModSaveChecklistDialog".GetHashCode(), dialogRect, id => {
             GUILayout.Label("Save changes to current mod checklist?");
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
