@@ -1,6 +1,6 @@
 # Kerbal Checklists
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Downloads](https://img.shields.io/github/downloads/yourusername/yourmod/total.svg)
+![Downloads](https://img.shields.io/github/downloads/averageksp/KerbalChecklists/total.svg)
 ![Imgur Image](https://imgur.com/l7WQ51u.png)
 **Kerbal Checklists** is an in-game checklist system for **Kerbal Space Program (KSP)** to help you manage launch procedures, space missions, and vehicle preparation.
 
