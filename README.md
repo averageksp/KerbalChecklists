@@ -6,6 +6,7 @@
 ![KSP Version](https://img.shields.io/badge/KSP-1.12.x-blue.svg)
 ![Imgur Image](https://imgur.com/l7WQ51u.png)
 *Doesn't count downloads from [SpaceDock](https://spacedock.info/mod/3588/KerbalChecklists).
+
 **Kerbal Checklists** is an in-game checklist system for **Kerbal Space Program (KSP)** to help you manage launch procedures, space missions, and vehicle preparation.
 
 ---
