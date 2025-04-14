@@ -113,7 +113,7 @@ Pull requests are welcome!
 
 ---
 
-## Additional Resources
+## 📚 Additional Resources
 
 For a list of useful links and resources related to this mod, check out [LINKS.md](./LINKS.md).
 
