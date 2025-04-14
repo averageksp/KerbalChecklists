@@ -1,6 +1,6 @@
 # Kerbal Checklists
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Downloads](https://img.shields.io/github/downloads/averageksp/KerbalChecklists/total.svg)*
+![Downloads](https://img.shields.io/github/downloads/averageksp/KerbalChecklists/total.svg)# *
 ![Last commit](https://img.shields.io/github/last-commit/averageksp/KerbalChecklists/main.svg)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/averageksp/KerbalChecklists)
 ![KSP Version](https://img.shields.io/badge/KSP-1.12.x-blue.svg)
