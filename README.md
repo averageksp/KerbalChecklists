@@ -113,6 +113,12 @@ Pull requests are welcome!
 
 ---
 
+## Additional Resources
+
+For a list of useful links and resources related to this mod, check out [LINKS.md](./LINKS.md).
+
+---
+
 ## 📄 License
 
 This project is licensed under the **MIT License**. See the [LICENSE](https://github.com/averageksp/KerbalChecklists/blob/main/LICENSE) file for more information.
