@@ -45,7 +45,6 @@ public class KerbalChecklists : MonoBehaviour
 
     private bool showConfirmNewChecklistDialog = false;
     private bool showSaveBeforeNewChecklistDialog = false;
-    private bool showNewChecklistDialog = false;
     private bool showSaveChecklistDialog = false;
     private bool showModSaveChecklistDialog = false;
     private bool showFileDeleteDialog = false;
@@ -59,23 +58,30 @@ public class KerbalChecklists : MonoBehaviour
     private float autoSaveTimer = 0f;
     private const float autoSaveInterval = 2.0f;
 
+    private Texture2D arrowUpTex;
+    private Texture2D arrowDownTex;
+
     void Start()
     {
         defaultFolder = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "KerbalChecklists");
-        if (!Directory.Exists(defaultFolder))
-            Directory.CreateDirectory(defaultFolder);
+        if (!Directory.Exists(defaultFolder)) Directory.CreateDirectory(defaultFolder);
         defaultSavedFolder = Path.Combine(defaultFolder, "SavedChecklists");
-        if (!Directory.Exists(defaultSavedFolder))
-            Directory.CreateDirectory(defaultSavedFolder);
+        if (!Directory.Exists(defaultSavedFolder)) Directory.CreateDirectory(defaultSavedFolder);
         currentChecklistFolder = defaultSavedFolder;
         currentModFolder = "";
         activeChecklistPath = Path.Combine(defaultFolder, "activeChecklist.txt");
         settingsPath = Path.Combine(defaultFolder, "settings.txt");
+
         if (!File.Exists(settingsPath) || new FileInfo(settingsPath).Length == 0)
         {
             deleteNeverAskAgainToggle = false;
             SaveSettings();
         }
+        else
+        {
+            LoadSettings();
+        }
+
         string gameDataPath = Path.Combine(KSPUtil.ApplicationRootPath, "GameData");
         foreach (string dir in Directory.GetDirectories(gameDataPath))
         {
@@ -102,14 +108,15 @@ public class KerbalChecklists : MonoBehaviour
                 catch { }
             }
         }
-        LoadSettings();
+
         LoadActiveChecklist();
+
         string[] possibleIconPaths = {
             Path.Combine(Path.GetFileName(defaultFolder), "Textures/icon"),
             Path.Combine(Path.GetFileName(defaultFolder) + "/Textures/icon"),
-            "KerbalChecklists-1.2/KerbalChecklists/Textures/icon",
+            "KerbalChecklists-1.3/KerbalChecklists/Textures/icon",
             "KerbalChecklists/Textures/icon",
-            "KerbalChecklists-1.2/Textures/icon"
+            "KerbalChecklists-1.3/Textures/icon"
         };
         Texture2D icon = null;
         foreach (string path in possibleIconPaths)
@@ -120,50 +127,42 @@ public class KerbalChecklists : MonoBehaviour
         }
         if (icon == null)
             UnityEngine.Debug.LogError("[KerbalChecklists] Could not find icon.png at expected paths.");
+
+        arrowUpTex = GameDatabase.Instance.GetTexture("KerbalChecklists/Textures/arrow_up", false);
+        arrowDownTex = GameDatabase.Instance.GetTexture("KerbalChecklists/Textures/arrow_down", false);
+
         appButton = ApplicationLauncher.Instance.AddModApplication(
             OnToggleGUI,
             OnToggleGUI,
-            null,
-            null,
-            null,
-            null,
+            null, null, null, null,
             ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.SPACECENTER |
             ApplicationLauncher.AppScenes.VAB | ApplicationLauncher.AppScenes.SPH,
             icon);
     }
 
-    private void LoadSettings()
+    void OnDestroy()
     {
-        if (File.Exists(settingsPath))
-        {
-            try
-            {
-                string[] lines = File.ReadAllLines(settingsPath);
-                foreach (string line in lines)
-                {
-                    if (line.StartsWith("NeverAskDelete="))
-                        bool.TryParse(line.Substring("NeverAskDelete=".Length), out deleteNeverAskAgainToggle);
-                }
-            }
-            catch (Exception ex)
-            {
-                UnityEngine.Debug.LogError("[KerbalChecklists] Error loading settings: " + ex.Message);
-            }
-        }
+        if (appButton != null)
+            ApplicationLauncher.Instance.RemoveModApplication(appButton);
+        SaveActiveChecklist();
+        SaveSettings();
     }
 
-    private void SaveSettings()
+    void Update()
     {
-        try
+        if (isDirty)
         {
-            using (StreamWriter writer = new StreamWriter(settingsPath))
+            autoSaveTimer += Time.deltaTime;
+            if (autoSaveTimer >= autoSaveInterval)
             {
-                writer.WriteLine("NeverAskDelete=" + deleteNeverAskAgainToggle);
+                SaveActiveChecklist();
+                isDirty = false;
+                autoSaveTimer = 0f;
             }
         }
-        catch (Exception ex)
+        else
         {
-            UnityEngine.Debug.LogError("[KerbalChecklists] Error saving settings: " + ex.Message);
+            autoSaveTimer = 0f;
         }
     }
 
@@ -174,18 +173,12 @@ public class KerbalChecklists : MonoBehaviour
         GUI.skin = HighLogic.Skin;
         if (showGUI)
             windowRect = ClickThruBlocker.GUILayoutWindow("KerbalChecklistsWindow".GetHashCode(), windowRect, DrawWindow, "Kerbal Checklists", GUILayout.Width(350), GUILayout.Height(650));
-        if (showConfirmNewChecklistDialog)
-            DrawConfirmNewChecklistDialog();
-        if (showSaveBeforeNewChecklistDialog)
-            DrawSaveBeforeNewChecklistDialog();
-        if (showSaveChecklistDialog)
-            DrawSaveChecklistDialog();
-        if (showModSaveChecklistDialog)
-            DrawModSaveChecklistDialog();
-        if (showFileDeleteDialog)
-            DrawFileDeleteConfirmationDialog();
-        if (showItemDeleteDialog)
-            DrawItemDeleteConfirmationDialog();
+        if (showConfirmNewChecklistDialog) DrawConfirmNewChecklistDialog();
+        if (showSaveBeforeNewChecklistDialog) DrawSaveBeforeNewChecklistDialog();
+        if (showSaveChecklistDialog) DrawSaveChecklistDialog();
+        if (showModSaveChecklistDialog) DrawModSaveChecklistDialog();
+        if (showFileDeleteDialog) DrawFileDeleteConfirmationDialog();
+        if (showItemDeleteDialog) DrawItemDeleteConfirmationDialog();
     }
 
     void DrawWindow(int windowID)
@@ -208,18 +201,22 @@ public class KerbalChecklists : MonoBehaviour
                 showSaveChecklistDialog = true;
             }
             else
-            {
                 showModSaveChecklistDialog = true;
-            }
         }
         if (GUILayout.Button("Refresh", GUILayout.Height(30)))
             availableScrollPos = Vector2.zero;
         GUILayout.EndHorizontal();
+
         GUILayout.Space(5);
         GUILayout.Label("Add New Checklist Item:");
+
         GUILayout.BeginHorizontal();
-        newItemText = GUILayout.TextField(newItemText, GUILayout.Width(250));
-        if (GUILayout.Button("Add", GUILayout.Width(80), GUILayout.Height(24)))
+        GUIStyle textFieldStyle = new GUIStyle(GUI.skin.textArea) { wordWrap = true };
+        float requiredHeight = textFieldStyle.CalcHeight(new GUIContent(newItemText), 300f);
+        int clampedLines = Mathf.Clamp(Mathf.CeilToInt(requiredHeight / 22f), 1, 10);
+        newItemText = GUILayout.TextField(newItemText, textFieldStyle, GUILayout.Width(300), GUILayout.Height(20 * clampedLines));
+
+        if (GUILayout.Button("Add", GUILayout.Width(80), GUILayout.Height(30)))
         {
             if (!string.IsNullOrEmpty(newItemText))
             {
@@ -241,6 +238,36 @@ public class KerbalChecklists : MonoBehaviour
             if (curr != prev) { checklist[i].Completed = curr; MarkDirty(); }
             GUILayout.Space(5);
             GUILayout.Label(checklist[i].Text, GUILayout.Width(200));
+
+            if (arrowUpTex != null && GUILayout.Button(new GUIContent(arrowUpTex), GUILayout.Width(24), GUILayout.Height(24)))
+            {
+                if (i > 0)
+                {
+                    var tmp = checklist[i - 1];
+                    checklist[i - 1] = checklist[i];
+                    checklist[i] = tmp;
+                    MarkDirty();
+                    if (!string.IsNullOrEmpty(currentChecklistName))
+                    {
+                        SaveChecklist(currentChecklistName, currentChecklistFolder);
+                    }
+                }
+            }
+            if (arrowDownTex != null && GUILayout.Button(new GUIContent(arrowDownTex), GUILayout.Width(24), GUILayout.Height(24)))
+            {
+                if (i < checklist.Count - 1)
+                {
+                    var tmp = checklist[i + 1];
+                    checklist[i + 1] = checklist[i];
+                    checklist[i] = tmp;
+                    MarkDirty();
+                    if (!string.IsNullOrEmpty(currentChecklistName))
+                    {
+                        SaveChecklist(currentChecklistName, currentChecklistFolder);
+                    }
+                }
+            }
+
             if (GUILayout.Button("Remove", GUILayout.Width(80)))
             {
                 if (currentChecklistFolder == defaultSavedFolder)
@@ -260,12 +287,11 @@ public class KerbalChecklists : MonoBehaviour
             GUILayout.Space(2);
         }
         GUILayout.EndScrollView();
+
         int completedCount = 0;
         foreach (var item in checklist)
-            if (item.Completed)
-                completedCount++;
+            if (item.Completed) completedCount++;
         GUILayout.Label("Completed: " + completedCount + " / " + checklist.Count);
-        GUILayout.Space(5);
         if (!string.IsNullOrEmpty(currentChecklistFolder) && currentChecklistFolder != defaultSavedFolder)
         {
             if (modConfigs.ContainsKey(currentModFolder))
@@ -279,10 +305,12 @@ public class KerbalChecklists : MonoBehaviour
                 GUILayout.Label("Checklist Mod from: " + Path.GetFileName(currentChecklistFolder));
             }
         }
+        GUILayout.Space(5);
         GUILayout.BeginHorizontal();
         GUILayout.Label("Current Checklist Name:", GUILayout.Width(150));
         currentChecklistName = GUILayout.TextField(currentChecklistName, GUILayout.Width(200));
         GUILayout.EndHorizontal();
+
         GUILayout.Space(5);
         GUILayout.Label("Available Checklists:");
         availableScrollPos = GUILayout.BeginScrollView(availableScrollPos, GUILayout.Height(120));
@@ -332,77 +360,116 @@ public class KerbalChecklists : MonoBehaviour
         return lower == "license" || lower == "kerbalchecklistconfig";
     }
 
-    void Update()
-    {
-        if (isDirty)
-        {
-            autoSaveTimer += Time.deltaTime;
-            if (autoSaveTimer >= autoSaveInterval) { SaveActiveChecklist(); isDirty = false; autoSaveTimer = 0f; }
-        }
-        else
-        {
-            autoSaveTimer = 0f;
-        }
-    }
-
     private void MarkDirty() { isDirty = true; }
 
-    private void DrawItemDeleteConfirmationDialog()
+    private void ResetChecklist()
     {
-        Rect dialogRect = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 80, 300, 140);
-        ClickThruBlocker.GUILayoutWindow("ItemDeleteDialog".GetHashCode(), dialogRect, id => {
-            ModConfig config = modConfigs.ContainsKey(currentModFolder) ? modConfigs[currentModFolder] : null;
-            string modName = config != null ? config.ModName : Path.GetFileName(currentChecklistFolder);
-            string author = config != null ? config.Author : "";
-            GUILayout.Label("Delete this item from the " + modName + " mod" + (string.IsNullOrEmpty(author) ? "" : " by " + author) + "?");
-            GUILayout.Space(10);
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Yes", GUILayout.Width(80)))
-            {
-                if (itemIndexToDelete >= 0 && itemIndexToDelete < checklist.Count) { checklist.RemoveAt(itemIndexToDelete); MarkDirty(); }
-                showItemDeleteDialog = false;
-            }
-            if (GUILayout.Button("No", GUILayout.Width(80))) { showItemDeleteDialog = false; }
-            GUILayout.EndHorizontal();
-        }, "Delete Checklist Item", GUILayout.Width(300), GUILayout.Height(140));
+        checklist.Clear();
+        currentChecklistName = "";
+        currentChecklistFolder = defaultSavedFolder;
+        currentModFolder = "";
     }
 
-    private void DrawFileDeleteConfirmationDialog()
+    private void SaveSettings()
     {
-        Rect dialogRect = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 80, 300, 160);
-        ClickThruBlocker.GUILayoutWindow("FileDeleteDialog".GetHashCode(), dialogRect, id => {
-            GUILayout.Label("Delete checklist file:");
-            GUILayout.Label(checklistToDelete);
-            if (currentChecklistFolder == defaultSavedFolder)
+        try
+        {
+            using (var w = new StreamWriter(settingsPath))
+                w.WriteLine("NeverAskDelete=" + deleteNeverAskAgainToggle);
+        }
+        catch (Exception ex) { Debug.LogError("[KerbalChecklists] Error saving settings: " + ex.Message); }
+    }
+
+    private void LoadSettings()
+    {
+        if (!File.Exists(settingsPath)) return;
+        try
+        {
+            foreach (var line in File.ReadAllLines(settingsPath))
+                if (line.StartsWith("NeverAskDelete="))
+                    bool.TryParse(line.Substring("NeverAskDelete=".Length), out deleteNeverAskAgainToggle);
+        }
+        catch (Exception ex) { Debug.LogError("[KerbalChecklists] Error loading settings: " + ex.Message); }
+    }
+
+    private void SaveActiveChecklist()
+    {
+        try
+        {
+            using (var w = new StreamWriter(activeChecklistPath))
+                foreach (var it in checklist)
+                    w.WriteLine(it.Completed + "|" + it.Text);
+            UnityEngine.Debug.Log("[KerbalChecklists] Active checklist saved.");
+        }
+        catch (Exception ex) { Debug.LogError("[KerbalChecklists] Error saving active checklist: " + ex.Message); }
+    }
+
+    private void LoadActiveChecklist()
+    {
+        checklist.Clear();
+        if (!File.Exists(activeChecklistPath)) return;
+        try
+        {
+            foreach (var line in File.ReadAllLines(activeChecklistPath))
             {
-                GUILayout.Space(10);
-                GUILayout.BeginHorizontal();
-                GUILayout.Space(10);
-                bool newVal = GUILayout.Toggle(deleteNeverAskAgainToggle, "Never Show Again", GUILayout.Width(140));
-                if (newVal != deleteNeverAskAgainToggle) { deleteNeverAskAgainToggle = newVal; SaveSettings(); }
-                GUILayout.FlexibleSpace();
-                GUILayout.EndHorizontal();
+                var parts = line.Split('|');
+                if (parts.Length == 2)
+                    checklist.Add(new ChecklistItem { Completed = bool.Parse(parts[0]), Text = parts[1] });
             }
-            else
+            UnityEngine.Debug.Log("[KerbalChecklists] Active checklist loaded.");
+        }
+        catch (Exception ex) { Debug.LogError("[KerbalChecklists] Error loading active checklist: " + ex.Message); }
+    }
+
+    private void SaveChecklist(string name, string folder)
+    {
+        string path = Path.Combine(folder, name + ".txt");
+        try
+        {
+            using (var w = new StreamWriter(path))
+                foreach (var it in checklist)
+                    w.WriteLine(it.Completed + "|" + it.Text);
+            UnityEngine.Debug.Log("[KerbalChecklists] Checklist '" + name + "' saved.");
+        }
+        catch (Exception ex) { Debug.LogError("[KerbalChecklists] Error saving checklist '" + name + "': " + ex.Message); }
+    }
+
+    private void LoadChecklistFromFile(string name, string folder)
+    {
+        string path = Path.Combine(folder, name + ".txt");
+        if (!File.Exists(path)) return;
+        checklist.Clear();
+        try
+        {
+            foreach (var line in File.ReadAllLines(path))
             {
-                ModConfig config = modConfigs.ContainsKey(currentModFolder) ? modConfigs[currentModFolder] : null;
-                string modName = config != null ? config.ModName : Path.GetFileName(currentChecklistFolder);
-                string author = config != null ? config.Author : "";
-                GUILayout.Space(10);
-                GUILayout.Label("Deleting this file will affect the " + modName + " mod" + (string.IsNullOrEmpty(author) ? "" : " by " + author) + ". Continue?");
+                var parts = line.Split('|');
+                if (parts.Length == 2)
+                    checklist.Add(new ChecklistItem { Completed = bool.Parse(parts[0]), Text = parts[1] });
             }
-            GUILayout.Space(10);
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Yes", GUILayout.Width(80))) { DeleteChecklist(checklistToDelete, currentChecklistFolder); showFileDeleteDialog = false; }
-            if (GUILayout.Button("No", GUILayout.Width(80))) { showFileDeleteDialog = false; }
-            GUILayout.EndHorizontal();
-        }, "Delete Checklist File", GUILayout.Width(300), GUILayout.Height(160));
+            currentChecklistName = name;
+            UnityEngine.Debug.Log("[KerbalChecklists] Checklist '" + name + "' loaded.");
+        }
+        catch (Exception ex) { Debug.LogError("[KerbalChecklists] Error loading checklist '" + name + "': " + ex.Message); }
+    }
+
+    private void DeleteChecklist(string name, string folder)
+    {
+        string path = Path.Combine(folder, name + ".txt");
+        if (!File.Exists(path)) return;
+        try
+        {
+            File.Delete(path);
+            UnityEngine.Debug.Log("[KerbalChecklists] Checklist '" + name + "' deleted.");
+        }
+        catch (Exception ex) { Debug.LogError("[KerbalChecklists] Error deleting checklist '" + name + "': " + ex.Message); }
     }
 
     private void DrawConfirmNewChecklistDialog()
     {
-        Rect dialogRect = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 75, 300, 120);
-        ClickThruBlocker.GUILayoutWindow("ConfirmNewChecklistDialog".GetHashCode(), dialogRect, id => {
+        Rect r = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 75, 300, 120);
+        ClickThruBlocker.GUILayoutWindow("ConfirmNewChecklistDialog".GetHashCode(), r, id =>
+        {
             GUILayout.Label("Do you want to create a new checklist?");
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
@@ -412,18 +479,16 @@ public class KerbalChecklists : MonoBehaviour
                 showSaveBeforeNewChecklistDialog = true;
             }
             if (GUILayout.Button("No", GUILayout.Width(80)))
-            {
                 showConfirmNewChecklistDialog = false;
-            }
             GUILayout.EndHorizontal();
         }, "New Checklist", GUILayout.Width(300), GUILayout.Height(120));
     }
 
-
     private void DrawSaveBeforeNewChecklistDialog()
     {
-        Rect dialogRect = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 75, 300, 120);
-        ClickThruBlocker.GUILayoutWindow("SaveBeforeNewChecklistDialog".GetHashCode(), dialogRect, id => {
+        Rect r = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 75, 300, 120);
+        ClickThruBlocker.GUILayoutWindow("SaveBeforeNewChecklistDialog".GetHashCode(), r, id =>
+        {
             GUILayout.Label("Save before creating a new checklist?");
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
@@ -442,15 +507,14 @@ public class KerbalChecklists : MonoBehaviour
         }, "Save Checklist", GUILayout.Width(300), GUILayout.Height(120));
     }
 
-
     private void DrawSaveChecklistDialog()
     {
         if (currentChecklistFolder != defaultSavedFolder) { showSaveChecklistDialog = false; return; }
-        Rect dialogRect = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 70, 300, 140);
-        ClickThruBlocker.GUILayoutWindow("SaveChecklistDialog".GetHashCode(), dialogRect, id => {
+        Rect r = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 70, 300, 140);
+        ClickThruBlocker.GUILayoutWindow("SaveChecklistDialog".GetHashCode(), r, id =>
+        {
             GUILayout.Label("Enter name for checklist:");
-            string nameInput = GUILayout.TextField(currentChecklistName, GUILayout.Width(250));
-            currentChecklistName = nameInput;
+            currentChecklistName = GUILayout.TextField(currentChecklistName, GUILayout.Width(250));
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Save", GUILayout.Width(80)))
@@ -474,8 +538,9 @@ public class KerbalChecklists : MonoBehaviour
 
     private void DrawModSaveChecklistDialog()
     {
-        Rect dialogRect = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 60, 300, 120);
-        ClickThruBlocker.GUILayoutWindow("ModSaveChecklistDialog".GetHashCode(), dialogRect, id => {
+        Rect r = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 60, 300, 120);
+        ClickThruBlocker.GUILayoutWindow("ModSaveChecklistDialog".GetHashCode(), r, id =>
+        {
             GUILayout.Label("Save changes to current mod checklist?");
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
@@ -485,136 +550,67 @@ public class KerbalChecklists : MonoBehaviour
                     SaveChecklist(currentChecklistName, currentChecklistFolder);
                 showModSaveChecklistDialog = false;
             }
-            if (GUILayout.Button("Cancel", GUILayout.Width(80))) { showModSaveChecklistDialog = false; }
+            if (GUILayout.Button("Cancel", GUILayout.Width(80)))
+                showModSaveChecklistDialog = false;
             GUILayout.EndHorizontal();
         }, "Save Mod Checklist", GUILayout.Width(300), GUILayout.Height(120));
     }
 
-
-    private void ResetChecklist()
+    private void DrawFileDeleteConfirmationDialog()
     {
-        checklist.Clear();
-        currentChecklistName = "";
-        currentChecklistFolder = defaultSavedFolder;
-        currentModFolder = "";
-    }
-
-    void OnDestroy()
-    {
-        if (ApplicationLauncher.Instance != null && appButton != null)
-            ApplicationLauncher.Instance.RemoveModApplication(appButton);
-        SaveActiveChecklist();
-    }
-
-    void SaveActiveChecklist()
-    {
-        try
+        Rect r = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 80, 300, 160);
+        ClickThruBlocker.GUILayoutWindow("FileDeleteDialog".GetHashCode(), r, id =>
         {
-            string path = Path.Combine(defaultFolder, "activeChecklist.txt");
-            using (StreamWriter writer = new StreamWriter(path))
+            GUILayout.Label("Delete checklist file:");
+            GUILayout.Label(checklistToDelete);
+            if (currentChecklistFolder == defaultSavedFolder)
             {
-                foreach (var item in checklist)
-                    writer.WriteLine(item.Completed + "|" + item.Text);
+                GUILayout.Space(10);
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(10);
+                bool newVal = GUILayout.Toggle(deleteNeverAskAgainToggle, "Never Show Again", GUILayout.Width(140));
+                if (newVal != deleteNeverAskAgainToggle) { deleteNeverAskAgainToggle = newVal; SaveSettings(); }
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
             }
-            UnityEngine.Debug.Log("[KerbalChecklists] Active checklist saved.");
-        }
-        catch (Exception ex)
-        {
-            UnityEngine.Debug.LogError("[KerbalChecklists] Error saving active checklist: " + ex.Message);
-        }
+            else
+            {
+                ModConfig config = modConfigs.ContainsKey(currentModFolder) ? modConfigs[currentModFolder] : null;
+                string modName = config != null ? config.ModName : Path.GetFileName(currentChecklistFolder);
+                string author = config != null ? config.Author : "";
+                GUILayout.Space(10);
+                GUILayout.Label("Deleting this file will affect the " + modName + (string.IsNullOrEmpty(author) ? "" : " by " + author) + ". Continue?");
+            }
+            GUILayout.Space(10);
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Yes", GUILayout.Width(80))) { DeleteChecklist(checklistToDelete, currentChecklistFolder); showFileDeleteDialog = false; }
+            if (GUILayout.Button("No", GUILayout.Width(80))) { showFileDeleteDialog = false; }
+            GUILayout.EndHorizontal();
+        }, "Delete Checklist File", GUILayout.Width(300), GUILayout.Height(160));
     }
 
-    void LoadActiveChecklist()
+    private void DrawItemDeleteConfirmationDialog()
     {
-        checklist.Clear();
-        currentChecklistName = "";
-        if (File.Exists(activeChecklistPath))
+        Rect r = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 80, 300, 140);
+        ClickThruBlocker.GUILayoutWindow("ItemDeleteDialog".GetHashCode(), r, id =>
         {
-            try
+            ModConfig config = modConfigs.ContainsKey(currentModFolder) ? modConfigs[currentModFolder] : null;
+            string modName = config != null ? config.ModName : Path.GetFileName(currentChecklistFolder);
+            string author = config != null ? config.Author : "";
+            GUILayout.Label("Delete this item from the " + modName + (string.IsNullOrEmpty(author) ? "" : " by " + author) + "?");
+            GUILayout.Space(10);
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Yes", GUILayout.Width(80)))
             {
-                using (StreamReader reader = new StreamReader(activeChecklistPath))
+                if (itemIndexToDelete >= 0 && itemIndexToDelete < checklist.Count)
                 {
-                    string line;
-                    while ((line = reader.ReadLine()) != null)
-                    {
-                        string[] parts = line.Split('|');
-                        if (parts.Length == 2)
-                            checklist.Add(new ChecklistItem { Completed = bool.Parse(parts[0]), Text = parts[1] });
-                    }
+                    checklist.RemoveAt(itemIndexToDelete);
+                    MarkDirty();
                 }
-                UnityEngine.Debug.Log("[KerbalChecklists] Active checklist loaded.");
+                showItemDeleteDialog = false;
             }
-            catch (Exception ex)
-            {
-                UnityEngine.Debug.LogError("[KerbalChecklists] Error loading active checklist: " + ex.Message);
-            }
-        }
-        else
-        {
-            UnityEngine.Debug.Log("[KerbalChecklists] No active checklist found, starting new.");
-        }
-    }
-
-    void SaveChecklist(string checklistName, string folder)
-    {
-        string checklistPath = Path.Combine(folder, checklistName + ".txt");
-        try
-        {
-            using (StreamWriter writer = new StreamWriter(checklistPath))
-            {
-                foreach (var item in checklist)
-                    writer.WriteLine(item.Completed + "|" + item.Text);
-            }
-            UnityEngine.Debug.Log("[KerbalChecklists] Checklist '" + checklistName + "' saved.");
-        }
-        catch (Exception ex)
-        {
-            UnityEngine.Debug.LogError("[KerbalChecklists] Error saving checklist '" + checklistName + "': " + ex.Message);
-        }
-    }
-
-    void LoadChecklistFromFile(string checklistName, string folder)
-    {
-        string checklistPath = Path.Combine(folder, checklistName + ".txt");
-        if (File.Exists(checklistPath))
-        {
-            checklist.Clear();
-            try
-            {
-                using (StreamReader reader = new StreamReader(checklistPath))
-                {
-                    string line;
-                    while ((line = reader.ReadLine()) != null)
-                    {
-                        string[] parts = line.Split('|');
-                        if (parts.Length == 2)
-                            checklist.Add(new ChecklistItem { Completed = bool.Parse(parts[0]), Text = parts[1] });
-                    }
-                }
-                currentChecklistName = checklistName;
-                UnityEngine.Debug.Log("[KerbalChecklists] Checklist '" + checklistName + "' loaded.");
-            }
-            catch (Exception ex)
-            {
-                UnityEngine.Debug.LogError("[KerbalChecklists] Error loading checklist '" + checklistName + "': " + ex.Message);
-            }
-        }
-    }
-
-    void DeleteChecklist(string checklistName, string folder)
-    {
-        string checklistPath = Path.Combine(folder, checklistName + ".txt");
-        if (File.Exists(checklistPath))
-        {
-            try
-            {
-                File.Delete(checklistPath);
-                UnityEngine.Debug.Log("[KerbalChecklists] Checklist '" + checklistName + "' deleted.");
-            }
-            catch (Exception ex)
-            {
-                UnityEngine.Debug.LogError("[KerbalChecklists] Error deleting checklist '" + checklistName + "': " + ex.Message);
-            }
-        }
+            if (GUILayout.Button("No", GUILayout.Width(80))) { showItemDeleteDialog = false; }
+            GUILayout.EndHorizontal();
+        }, "Delete Checklist Item", GUILayout.Width(300), GUILayout.Height(140));
     }
 }
