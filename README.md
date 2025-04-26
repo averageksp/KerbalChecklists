@@ -41,6 +41,8 @@
          KerbalChecklists.dll
        Textures/
          icon.png
+         arrow_up.png
+         arrow_down.png
    ```
 4. Launch KSP and click the toolbar icon to open (must be in VAB, SPH or Flight for it to show up) **Kerbal Checklists**.
 
