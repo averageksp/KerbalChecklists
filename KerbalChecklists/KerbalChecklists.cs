@@ -5,7 +5,7 @@ using UnityEngine;
 using KSP;
 using KSP.UI.Screens;
 using ClickThroughFix;
-
+using KSP.Localization;
 public class ModConfig
 {
     public string ModName;
@@ -185,7 +185,7 @@ public class KerbalChecklists : MonoBehaviour
     {
         GUILayout.BeginVertical();
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("New Checklist", GUILayout.Height(30)))
+        if (GUILayout.Button(Localizer.Format("#autoLOC_8102000"), GUILayout.Height(30)))
         {
             isNewChecklistOperation = true;
             if (currentChecklistFolder == defaultSavedFolder)
@@ -193,7 +193,8 @@ public class KerbalChecklists : MonoBehaviour
             else
                 ResetChecklist();
         }
-        if (GUILayout.Button("Save Checklist", GUILayout.Height(30)))
+
+        if (GUILayout.Button(Localizer.Format("#autoLOC_8102001"), GUILayout.Height(30)))
         {
             if (currentChecklistFolder == defaultSavedFolder)
             {
@@ -203,12 +204,17 @@ public class KerbalChecklists : MonoBehaviour
             else
                 showModSaveChecklistDialog = true;
         }
-        if (GUILayout.Button("Refresh", GUILayout.Height(30)))
+
+        if (GUILayout.Button(Localizer.Format("#autoLOC_8102002"), GUILayout.Height(30)))
+        {
             availableScrollPos = Vector2.zero;
+        }
+
+        availableScrollPos = Vector2.zero;
         GUILayout.EndHorizontal();
 
         GUILayout.Space(5);
-        GUILayout.Label("Add New Checklist Item:");
+        GUILayout.Label(Localizer.Format("#autoLOC_8102003"));
 
         GUILayout.BeginHorizontal();
         GUIStyle textFieldStyle = new GUIStyle(GUI.skin.textArea) { wordWrap = true };
@@ -216,7 +222,7 @@ public class KerbalChecklists : MonoBehaviour
         int clampedLines = Mathf.Clamp(Mathf.CeilToInt(requiredHeight / 22f), 1, 10);
         newItemText = GUILayout.TextField(newItemText, textFieldStyle, GUILayout.Width(300), GUILayout.Height(20 * clampedLines));
 
-        if (GUILayout.Button("Add", GUILayout.Width(80), GUILayout.Height(30)))
+        GUILayout.Button(Localizer.Format("#autoLOC_8102004"), GUILayout.Width(80), GUILayout.Height(30))
         {
             if (!string.IsNullOrEmpty(newItemText))
             {
@@ -227,7 +233,7 @@ public class KerbalChecklists : MonoBehaviour
         }
         GUILayout.EndHorizontal();
         GUILayout.Space(5);
-        GUILayout.Label("Checklist Items:");
+        GUILayout.Label(Localizer.Format("#autoLOC_8102005"));
         checklistScrollPos = GUILayout.BeginScrollView(checklistScrollPos, GUILayout.Height(250));
         for (int i = 0; i < checklist.Count; i++)
         {
@@ -268,7 +274,7 @@ public class KerbalChecklists : MonoBehaviour
                 }
             }
 
-            if (GUILayout.Button("Remove", GUILayout.Width(80)))
+           if GUILayout.Button(Localizer.Format("#autoLOC_8102006"), GUILayout.Width(80))
             {
                 if (currentChecklistFolder == defaultSavedFolder)
                 {
@@ -291,28 +297,28 @@ public class KerbalChecklists : MonoBehaviour
         int completedCount = 0;
         foreach (var item in checklist)
             if (item.Completed) completedCount++;
-        GUILayout.Label("Completed: " + completedCount + " / " + checklist.Count);
+        GUILayout.Label(Localizer.Format("#autoLOC_8102007", completedCount, checklist.Count));
         if (!string.IsNullOrEmpty(currentChecklistFolder) && currentChecklistFolder != defaultSavedFolder)
         {
             if (modConfigs.ContainsKey(currentModFolder))
             {
                 ModConfig config = modConfigs[currentModFolder];
-                GUILayout.Label("Checklist Mod from: " + config.ModName);
-                GUILayout.Label("Author: " + config.Author);
+                GUILayout.Label(Localizer.Format("#autoLOC_8102008", config.ModName));
+                GUILayout.Label(Localizer.Format("#autoLOC_8102009", config.Author));
             }
             else
             {
-                GUILayout.Label("Checklist Mod from: " + Path.GetFileName(currentChecklistFolder));
+                GUILayout.Label(Localizer.Format("#autoLOC_8102010", Path.GetFileName(currentChecklistFolder)));
             }
         }
         GUILayout.Space(5);
         GUILayout.BeginHorizontal();
-        GUILayout.Label("Current Checklist Name:", GUILayout.Width(150));
+        GUILayout.Label(Localizer.Format("#autoLOC_8102011"), GUILayout.Width(150));
         currentChecklistName = GUILayout.TextField(currentChecklistName, GUILayout.Width(200));
         GUILayout.EndHorizontal();
 
         GUILayout.Space(5);
-        GUILayout.Label("Available Checklists:");
+        GUILayout.Label(Localizer.Format("#autoLOC_8102012"));
         availableScrollPos = GUILayout.BeginScrollView(availableScrollPos, GUILayout.Height(120));
         string[] defaultFiles = Directory.GetFiles(defaultSavedFolder, "*.txt");
         foreach (string file in defaultFiles)
@@ -322,7 +328,7 @@ public class KerbalChecklists : MonoBehaviour
                 continue;
             GUILayout.BeginHorizontal();
             if (GUILayout.Button(fileName, GUILayout.Width(250))) { currentChecklistFolder = defaultSavedFolder; currentModFolder = ""; LoadChecklistFromFile(fileName, defaultSavedFolder); }
-            if (GUILayout.Button("Remove", GUILayout.Width(80)))
+            if (GUILayout.Button(Localizer.Format("#autoLOC_8102050"), GUILayout.Width(80)))
             {
                 if (deleteNeverAskAgainToggle) { DeleteChecklist(fileName, defaultSavedFolder); }
                 else { checklistToDelete = fileName; currentChecklistFolder = defaultSavedFolder; currentModFolder = ""; showFileDeleteDialog = true; }
@@ -344,7 +350,7 @@ public class KerbalChecklists : MonoBehaviour
                     continue;
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button(fileName, GUILayout.Width(250))) { currentChecklistFolder = modChecklistsPath; currentModFolder = modFolder; LoadChecklistFromFile(fileName, modChecklistsPath); }
-                if (GUILayout.Button("Remove", GUILayout.Width(80))) { checklistToDelete = fileName; currentChecklistFolder = modChecklistsPath; currentModFolder = modFolder; showFileDeleteDialog = true; }
+                if (GUILayout.Button(Localizer.Format("#autoLOC_8102050"), GUILayout.Width(80))) { checklistToDelete = fileName; currentChecklistFolder = modChecklistsPath; currentModFolder = modFolder; showFileDeleteDialog = true; }
                 GUILayout.EndHorizontal();
                 GUILayout.Space(2);
             }
@@ -470,18 +476,18 @@ public class KerbalChecklists : MonoBehaviour
         Rect r = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 75, 300, 120);
         ClickThruBlocker.GUILayoutWindow("ConfirmNewChecklistDialog".GetHashCode(), r, id =>
         {
-            GUILayout.Label("Do you want to create a new checklist?");
+            GUILayout.Label(Localizer.Format("#autoLOC_8102013"));
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Yes", GUILayout.Width(80)))
+            if (GUILayout.Button(Localizer.Format("#autoLOC_8102014"), GUILayout.Width(80)))
             {
                 showConfirmNewChecklistDialog = false;
                 showSaveBeforeNewChecklistDialog = true;
             }
-            if (GUILayout.Button("No", GUILayout.Width(80)))
+            if (GUILayout.Button(Localizer.Format("#autoLOC_8102015"), GUILayout.Width(80)))
                 showConfirmNewChecklistDialog = false;
             GUILayout.EndHorizontal();
-        }, "New Checklist", GUILayout.Width(300), GUILayout.Height(120));
+        }, Localizer.Format("#autoLOC_8102016"), GUILayout.Width(300), GUILayout.Height(120));
     }
 
     private void DrawSaveBeforeNewChecklistDialog()
@@ -489,23 +495,28 @@ public class KerbalChecklists : MonoBehaviour
         Rect r = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 75, 300, 120);
         ClickThruBlocker.GUILayoutWindow("SaveBeforeNewChecklistDialog".GetHashCode(), r, id =>
         {
-            GUILayout.Label("Save before creating a new checklist?");
+            GUILayout.Label(Localizer.Format("#autoLOC_8102017"));
             GUILayout.Space(10);
+            
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Yes", GUILayout.Width(80)))
+            
+            if (GUILayout.Button(Localizer.Format("#autoLOC_8102018"), GUILayout.Width(80)))
             {
                 showSaveBeforeNewChecklistDialog = false;
                 pendingNewChecklistAfterSave = true;
                 showSaveChecklistDialog = true;
             }
-            if (GUILayout.Button("No", GUILayout.Width(80)))
+            
+            if (GUILayout.Button(Localizer.Format("#autoLOC_8102019"), GUILayout.Width(80)))
             {
                 showSaveBeforeNewChecklistDialog = false;
                 ResetChecklist();
             }
+            
             GUILayout.EndHorizontal();
-        }, "Save Checklist", GUILayout.Width(300), GUILayout.Height(120));
+        }, Localizer.Format("#autoLOC_8102020"), GUILayout.Width(300), GUILayout.Height(120));  // Localize the window title
     }
+
 
     private void DrawSaveChecklistDialog()
     {
@@ -513,11 +524,14 @@ public class KerbalChecklists : MonoBehaviour
         Rect r = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 70, 300, 140);
         ClickThruBlocker.GUILayoutWindow("SaveChecklistDialog".GetHashCode(), r, id =>
         {
-            GUILayout.Label("Enter name for checklist:");
+            GUILayout.Label(Localizer.Format("#autoLOC_8102021"));
+            
             currentChecklistName = GUILayout.TextField(currentChecklistName, GUILayout.Width(250));
             GUILayout.Space(10);
+            
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Save", GUILayout.Width(80)))
+            
+            if (GUILayout.Button(Localizer.Format("#autoLOC_8102022"), GUILayout.Width(80)))
             {
                 if (!string.IsNullOrEmpty(currentChecklistName))
                 {
@@ -527,48 +541,56 @@ public class KerbalChecklists : MonoBehaviour
                     if (pendingNewChecklistAfterSave) { pendingNewChecklistAfterSave = false; ResetChecklist(); }
                 }
             }
-            if (GUILayout.Button("Cancel", GUILayout.Width(80)))
+            
+            if (GUILayout.Button(Localizer.Format("#autoLOC_8102023"), GUILayout.Width(80)))
             {
                 showSaveChecklistDialog = false;
                 if (pendingNewChecklistAfterSave) { pendingNewChecklistAfterSave = false; ResetChecklist(); }
             }
+            
             GUILayout.EndHorizontal();
-        }, "Save Checklist", GUILayout.Width(300), GUILayout.Height(140));
+        }, Localizer.Format("#autoLOC_8102024"), GUILayout.Width(300), GUILayout.Height(140));  // Localize the window title
     }
+
 
     private void DrawModSaveChecklistDialog()
     {
         Rect r = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 60, 300, 120);
         ClickThruBlocker.GUILayoutWindow("ModSaveChecklistDialog".GetHashCode(), r, id =>
         {
-            GUILayout.Label("Save changes to current mod checklist?");
+            GUILayout.Label(Localizer.Format("#autoLOC_8102025"));
             GUILayout.Space(10);
+            
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Save", GUILayout.Width(80)))
+            
+            if (GUILayout.Button(Localizer.Format("#autoLOC_8102026"), GUILayout.Width(80)))
             {
                 if (!string.IsNullOrEmpty(currentChecklistName))
                     SaveChecklist(currentChecklistName, currentChecklistFolder);
                 showModSaveChecklistDialog = false;
             }
-            if (GUILayout.Button("Cancel", GUILayout.Width(80)))
+            
+            if (GUILayout.Button(Localizer.Format("#autoLOC_8102027"), GUILayout.Width(80)))
                 showModSaveChecklistDialog = false;
+            
             GUILayout.EndHorizontal();
-        }, "Save Mod Checklist", GUILayout.Width(300), GUILayout.Height(120));
+        }, Localizer.Format("#autoLOC_8102028"), GUILayout.Width(300), GUILayout.Height(120));
     }
+
 
     private void DrawFileDeleteConfirmationDialog()
     {
         Rect r = new Rect(Screen.width / 2 - 150, Screen.height / 2 - 80, 300, 160);
         ClickThruBlocker.GUILayoutWindow("FileDeleteDialog".GetHashCode(), r, id =>
         {
-            GUILayout.Label("Delete checklist file:");
+            GUILayout.Label(Localizer.Format("#autoLOC_8102029"));
             GUILayout.Label(checklistToDelete);
             if (currentChecklistFolder == defaultSavedFolder)
             {
                 GUILayout.Space(10);
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(10);
-                bool newVal = GUILayout.Toggle(deleteNeverAskAgainToggle, "Never Show Again", GUILayout.Width(140));
+                bool newVal = GUILayout.Toggle(deleteNeverAskAgainToggle, Localizer.Format("#autoLOC_8102030"), GUILayout.Width(140));
                 if (newVal != deleteNeverAskAgainToggle) { deleteNeverAskAgainToggle = newVal; SaveSettings(); }
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
@@ -579,14 +601,14 @@ public class KerbalChecklists : MonoBehaviour
                 string modName = config != null ? config.ModName : Path.GetFileName(currentChecklistFolder);
                 string author = config != null ? config.Author : "";
                 GUILayout.Space(10);
-                GUILayout.Label("Deleting this file will affect the " + modName + (string.IsNullOrEmpty(author) ? "" : " by " + author) + ". Continue?");
+                GUILayout.Label(string.Format(Localizer.Format("#autoLOC_8102031"), modName, string.IsNullOrEmpty(author) ? "" : author));
             }
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Yes", GUILayout.Width(80))) { DeleteChecklist(checklistToDelete, currentChecklistFolder); showFileDeleteDialog = false; }
-            if (GUILayout.Button("No", GUILayout.Width(80))) { showFileDeleteDialog = false; }
+            if (GUILayout.Button(Localizer.Format("#autoLOC_8102032"), GUILayout.Width(80))) { DeleteChecklist(checklistToDelete, currentChecklistFolder); showFileDeleteDialog = false; }
+            if (GUILayout.Button(Localizer.Format("#autoLOC_8102033"), GUILayout.Width(80))) { showFileDeleteDialog = false; }
             GUILayout.EndHorizontal();
-        }, "Delete Checklist File", GUILayout.Width(300), GUILayout.Height(160));
+        }, Localizer.Format("#autoLOC_8102034"), GUILayout.Width(300), GUILayout.Height(160));
     }
 
     private void DrawItemDeleteConfirmationDialog()
@@ -597,10 +619,10 @@ public class KerbalChecklists : MonoBehaviour
             ModConfig config = modConfigs.ContainsKey(currentModFolder) ? modConfigs[currentModFolder] : null;
             string modName = config != null ? config.ModName : Path.GetFileName(currentChecklistFolder);
             string author = config != null ? config.Author : "";
-            GUILayout.Label("Delete this item from the " + modName + (string.IsNullOrEmpty(author) ? "" : " by " + author) + "?");
+            GUILayout.Label(string.Format(Localizer.Format("#autoLOC_8102035"), modName, string.IsNullOrEmpty(author) ? "" : author));
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Yes", GUILayout.Width(80)))
+            if (GUILayout.Button(Localizer.Format("#autoLOC_8102036"), GUILayout.Width(80))) { }
             {
                 if (itemIndexToDelete >= 0 && itemIndexToDelete < checklist.Count)
                 {
@@ -611,6 +633,6 @@ public class KerbalChecklists : MonoBehaviour
             }
             if (GUILayout.Button("No", GUILayout.Width(80))) { showItemDeleteDialog = false; }
             GUILayout.EndHorizontal();
-        }, "Delete Checklist Item", GUILayout.Width(300), GUILayout.Height(140));
+        }, Localizer.Format("#autoLOC_8102037"), GUILayout.Width(300), GUILayout.Height(140));
     }
 }
