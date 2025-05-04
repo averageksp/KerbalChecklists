@@ -222,7 +222,7 @@ public class KerbalChecklists : MonoBehaviour
         int clampedLines = Mathf.Clamp(Mathf.CeilToInt(requiredHeight / 22f), 1, 10);
         newItemText = GUILayout.TextField(newItemText, textFieldStyle, GUILayout.Width(300), GUILayout.Height(20 * clampedLines));
 
-        GUILayout.Button(Localizer.Format("#autoLOC_8102004"), GUILayout.Width(80), GUILayout.Height(30))
+        GUILayout.Button(Localizer.Format("#autoLOC_8102004"), GUILayout.Width(80), GUILayout.Height(30));
         {
             if (!string.IsNullOrEmpty(newItemText))
             {
@@ -274,7 +274,7 @@ public class KerbalChecklists : MonoBehaviour
                 }
             }
 
-           if GUILayout.Button(Localizer.Format("#autoLOC_8102006"), GUILayout.Width(80))
+           if (GUILayout.Button(Localizer.Format("#autoLOC_8102006"), GUILayout.Width(80)))
             {
                 if (currentChecklistFolder == defaultSavedFolder)
                 {
