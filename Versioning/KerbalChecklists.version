@@ -1,0 +1,19 @@
+{
+  "NAME": "KerbalChecklists",
+  "URL": "https://raw.githubusercontent.com/averageksp/KerbalChecklists/refs/heads/main/Versioning/KerbalChecklists.version",
+  "DOWNLOAD": "https://spacedock.info/mod/3855/KerbalChecklists",
+  "GITHUB": {
+    "USERNAME": "averageksp",
+    "REPOSITORY": "KerbalChecklists"
+  },
+  "VERSION": {
+    "MAJOR": 1,
+    "MINOR": 3,
+    "PATCH": 2
+  },
+  "KSP_VERSION": {
+    "MAJOR": 1,
+    "MINOR": 12,
+    "PATCH": 5
+  }
+}
