@@ -206,9 +206,7 @@ public class KerbalChecklists : MonoBehaviour
         }
 
         if (GUILayout.Button(Localizer.Format("#autoLOC_8102002"), GUILayout.Height(30)))
-        {
             availableScrollPos = Vector2.zero;
-        }
 
         availableScrollPos = Vector2.zero;
         GUILayout.EndHorizontal();
